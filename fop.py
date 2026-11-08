@@ -10,17 +10,17 @@ Algorithme2 = {
 
 
     #derniere face
-    "OLL_SUNE":         [("R","U","R'","U","R","U2","R'"),6],                                                #1 sticker bien place   (droite)
-    "OLL_ANTI-SUNE":    [("R","U2","R'","U'","R","U'","R'"),6],                                              #1 sticker bien place   (gauche)
-    "OLL_CORNER":       [("F","R","U'","R'","U'","R","U","R'","F'"),4],                                      #2 stickers bien places (corner)
-    "OLL_BARRE":        [("R","U","R'","U'","R'","F","R","F'"),3],                                           #2 stickers bien places (1 barre + 0 barre exterieure)
-    "OLL_HEADLIGHTS":   [("F","R","U","R'","U'","F'"),6],                                                    #2 stickers bien places (1 barre + 1 barre exterieure)
-    "OLL_T":            [("R","U2","R2","U'","R2","U'","R2","U2","R"),2],                                    #0 sticker bien place   (0 barre + 1 barre exterieure)
-    "OLL_DOUBLE-SUNE":  [("R","U2","R'","U'","R","U","R'","U'","R","U'","R'"),3],                            #0 sticker bien place   (0 barre + 2 barre exterieure)
+    "OLL_SUNE":         [("R","U","R'","U","R","U2","R'"),6],                                                   #1 sticker bien place   (droite)
+    "OLL_ANTI-SUNE":    [("R","U2","R'","U'","R","U'","R'"),6],                                                 #1 sticker bien place   (gauche)
+    "OLL_CORNER":       [("F","R","U'","R'","U'","R","U","R'","F'"),4],                                         #2 stickers bien places (corner)
+    "OLL_BARRE":        [("R","U","R'","U'","R'","F","R","F'"),3],                                              #2 stickers bien places (1 barre + 0 barre exterieure)
+    "OLL_HEADLIGHTS":   [("F","R","U","R'","U'","F'"),6],                                                       #2 stickers bien places (1 barre + 1 barre exterieure)
+    "OLL_T":            [("R","U2","R2","U'","R2","U'","R2","U2","R"),2],                                       #0 sticker bien place   (0 barre + 1 barre exterieure)
+    "OLL_DOUBLE-SUNE":  [("R","U2","R'","U'","R","U","R'","U'","R","U'","R'"),3],                               #0 sticker bien place   (0 barre + 2 barre exterieure)
 
     #Derniere etape
-    "PLL_T-PERM":       [("R","U","R'","U'","R'","F","R2","U'","R'","U'","R","U","R'","F'"),2],              #4 barres basses correctes & 1 barre haute correcte
-    "PLL_J-PERM":       [("F","R","U'","R'","U'","R","U","R'","F'","R","U","R'","U'","R'","F","R","F'"),2],  #4 barres basses correctes & 0 barre haute correcte
+    "PLL_T-PERM":       [("R","U","R'","U'","R'","F","R2","U'","R'","U'","R","U","R'","F'"),2],                 #4 barres basses correctes & 1 barre haute correcte
+    "PLL_J-PERM":       [("F","R","U'","R'","U'","R","U","R'","F'","R","U","R'","U'","R'","F","R","F'"),2],     #4 barres basses correctes & 0 barre haute correcte
     
     #ortega
     "ortega_COUPLE":       [("R2","U'","B2","U2","R2","U'","R2"),2],                                            #1 barre basse correct     & 1 barre haute correcte
@@ -116,6 +116,7 @@ def lastlayer_fop(etat_actuelle):
     mouv += PLL2(etat_transfo)
     return mouv
 
+"""
 def ortega(etat_actuelle):
     if (len(etat_actuelle) == 16):
         etat_initial = RESOLU2[0:4] + etat_actuelle + RESOLU2[20:]
@@ -142,6 +143,7 @@ def ortega(etat_actuelle):
         mouv+= lastlayer_fop
         return mouv
     return mouv
+"""
 
 
 def melanger_OLL2(n,seed):

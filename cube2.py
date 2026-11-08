@@ -78,3 +78,7 @@ def afficher2(etat):
     print("      _______")
 
 
+afficher2(melanger2(5,90)[0])
+print (" ")
+print (" ")
+print(melanger2(5,90)[1])
