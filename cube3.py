@@ -12,6 +12,10 @@ RESOLU3 = (
     5,5,5,5,5,5,5,5,5, # face du bas
 )
 
+RESOLUS3 = {
+
+}
+
 # Numerotation des stickers de chaque face (ligne par ligne, vue de l'exterieur) :
 #   0 1 2
 #   3 4 5
@@ -73,6 +77,17 @@ MOUVEMENTS3 = {
     "b'": (42,39,36,43,40,37,6,7,8,9,10,11,12,13,14,15,16,17,18,3,0,21,4,1,24,5,2,29,32,35,28,31,34,27,30,33,51,48,38,52,49,41,53,50,44,45,46,47,25,22,19,26,23,20),
     "b2": (53,52,51,50,49,48,6,7,8,9,10,11,12,13,14,15,16,17,18,43,42,21,40,39,24,37,36,35,34,33,32,31,30,29,28,27,26,25,38,23,22,41,20,19,44,45,46,47,5,4,3,2,1,0),
 }
+
+def cross(etat):
+    return (len(set(etat[52:53]+etat[48:51]+etat[46:47])) == 1 
+            and etat[13] == etat[16] 
+            and etat[22] == etat[25]
+            and etat[31] == etat[34] 
+            and etat[40] == etat[43]
+            )
+
+def est_resolu3(cube):
+    return all(len(set(cube[i:i+9])) == 1 for i in range(0, 54, 9))
 
 def appliquer3(etat_actuelle, mouv):
     perm = MOUVEMENTS3[mouv]

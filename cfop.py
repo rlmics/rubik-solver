@@ -1,5 +1,7 @@
 import random
-from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3
+from collections import deque
+from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, est_resolu3, cross
+from solver import inverse, reconstruire
 
 #Dictionnaire algo
 ALGORITHMES3 = {
@@ -146,6 +148,25 @@ ALGORITHMES3 = {
 def auf(k):
     return {0:(),1:("U",),2:("U2",),3:("U'",)}[k]
 
+def solver_cross(etat_actuelle):
+    if (len(etat_actuelle) != 54) or (etat_actuelle.count(0) != 9) or (etat_actuelle.count(1) != 9) or (etat_actuelle.count(2) != 9) or (etat_actuelle.count(3) != 9) or (etat_actuelle.count(4) != 9) or (etat_actuelle.count(5) != 9):
+        return "il y a une erreur dans ta liste"
+    elif cross(etat_actuelle):
+        return []
+    etats = deque([RESOLU3])
+    vus = {RESOLU3}
+    parent = {RESOLU3: None}
+    while etats:
+        etat = etats.popleft()
+        for nom, perm in MOUVEMENTS3.items():
+            voisin = appliquer3(etat,nom)
+            if voisin in vus:
+                continue
+            vus.add(voisin)
+            parent[voisin] = (etat,nom)
+            if voisin in cross(etat_actuelle):
+                return reconstruire(parent,voisin)
+            etats.append(voisin)
 
 def PLL3(etat_actuelle):
     if (len(etat_actuelle) == 12):
@@ -155,7 +176,7 @@ def PLL3(etat_actuelle):
     else:
         return "euhhhhh comment dire... t'as fais une erreur d'entrée"
     for k in range(4):
-        if repeter3(etat_initial, "U", k) == RESOLU3:
+        if est_resolu3(repeter3(etat_initial, "U", k)):
             return ("U",)*k
     etat = etat_initial
     trouve = False
@@ -171,7 +192,7 @@ def PLL3(etat_actuelle):
                 etat = appliquer3(etat,n)
             etat_transfo = etat
             for j in range(4):
-                if repeter3(etat,"U",j) == RESOLU3:
+                if est_resolu3(repeter3(etat,"U",j)):
                     trouve = True
                     break
                 else:
@@ -194,7 +215,7 @@ def OLL3(etat_actuelle):
         etat_initial = etat_actuelle
     else: 
         return "euhhhhh comment dire... t'as fais une erreur d'entree"
-    if etat_initial[0:9] == (0,0,0,0,0,0,0,0,0):
+    if len(set(etat_initial[0:9])) == 1:
         return ()
     etat = etat_initial
     trouve = False
@@ -207,7 +228,7 @@ def OLL3(etat_actuelle):
             etat = repeter3(etat,"U",i)
             for n in mouvements:
                 etat = appliquer3(etat,n)
-            if etat[0:9] == (0,0,0,0,0,0,0,0,0):
+            if len(set(etat[0:9])) == 1:
                 trouve = True
                 break
             else:
