@@ -1,6 +1,6 @@
 import random
 from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2, melanger2, est_resolu2
-from fop import PLL2, OLL2, lastlayer_fop, melanger_OLL2, melanger_PLL2, firstlayer_fop, melanger_ortega, ortega
+from fop import PLL2, OLL2, melanger_OLL2, melanger_PLL2, firstlayer_fop, melanger_ortega, ortega
 
 # TEST MOUVEMENT
 def test_quatre_fois_identite():
@@ -46,13 +46,6 @@ def test_PLL2():
         print(firstlayer_fop(melanger_ortega(n,seed)[0]))
         print(etat)
         print(melanger_ortega(n,seed)[1])
-        assert est_resolu2(etat)
-
-def test_lastlayer_fop():
-    for i in range(1000):
-        etat = melanger_OLL2(random.randrange(100),random.randrange(1000))[0]
-        for m in lastlayer_fop(etat):
-            etat = appliquer2(etat, m)
         assert est_resolu2(etat)
 
 def test_firstlayer_fop():
