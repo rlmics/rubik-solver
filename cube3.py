@@ -12,10 +12,6 @@ RESOLU3 = (
     5,5,5,5,5,5,5,5,5, # face du bas
 )
 
-RESOLUS3 = {
-
-}
-
 # Numerotation des stickers de chaque face (ligne par ligne, vue de l'exterieur) :
 #   0 1 2
 #   3 4 5

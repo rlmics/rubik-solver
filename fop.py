@@ -1,5 +1,5 @@
 import random
-from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2
+from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2, raccourci, est_resolu2
 from cfop import auf
 from collections import deque
 from solver import reconstruire_fin
@@ -25,9 +25,9 @@ Algorithme2 = {
     "PLL_J-PERM":       [("F","R","U'","R'","U'","R","U","R'","F'","R","U","R'","U'","R'","F","R","F'"),2],     #4 barres basses correctes & 0 barre haute correcte
     
     #ortega
-    "ortega_COUPLE":       [("R2","U'","B2","U2","R2","U'","R2"),2],                                            #1 barre basse correct     & 1 barre haute correcte
-    "ortega_LONELY":       [("R","U'","R","F2","R'","U","R'"),2],                                               #0 barre basse correcte    & 1 barre haute correcte
-    "ortega_VOID":         [("R2","F2","R2"),2],                                                                #0 barre basse correcte    & 0 barre haute correcte
+    "ortega_COUPLE":       [("R2","U'","B2","U2","R2","U'","R2"),2,[[1,1]]],                                            #1 barre basse correct     & 1 barre haute correcte
+    "ortega_LONELY":       [("R","U'","R","F2","R'","U","R'"),2,[[1,0],[0,1]]],                                               #0 barre basse correcte    & 1 barre haute correcte
+    "ortega_VOID":         [("R2","F2","R2"),2,[[0,0]]],                                                                #0 barre basse correcte    & 0 barre haute correcte
 }
 
 def PLL2(etat_actuelle):
@@ -144,34 +144,56 @@ def firstlayer_fop(etat_actuelle):
                 return reconstruire_fin(parent,voisin)
             etats.append(voisin)
 
-"""
 def ortega(etat_actuelle):
     if (len(etat_actuelle) == 16):
         etat_initial = RESOLU2[0:4] + etat_actuelle + RESOLU2[20:]
     elif (len(etat_actuelle) == 24):
         etat_initial = etat_actuelle
+    if (len(set(etat_initial[0:4])) != 1 
+        and len(set(etat_initial[20:24])) != 1
+        ):
+        return "c'est pas bon ça"
+    barre = [0,0]
+    for i in range(2):
+        for j in range(4):
+            for n in ["U","D'"]:
+                etat_initial = appliquer2(etat_initial, n)
+            if len(set(etat_initial[4 + 2*i :6 + 2*i])) == 1:
+                barre[i] += 1
     etat = etat_initial
     mouv = ()
-    if (etat_initial[6]==etat_initial[7] and etat_initial[10]==etat_initial[11] and etat_initial[14]==etat_initial[15] and etat_initial[18]==etat_initial[19] and etat_initial[20:24] == (5,5,5,5)):
-        return lastlayer_fop
-    if etat_initial[0:4] != (0,0,0,0):
-        if type(OLL2(etat_initial)) is str:
-            return "mhhh tu t'es trompe"
-        mouv += OLL2(etat_initial)
-        for n in OLL2(etat_actuelle):
-            etat = appliquer2(etat,n)
-        etat_transfo = etat
-    if (etat_transfo[6]==etat_transfo[7] and etat_transfo[10]==etat_transfo[11] and etat_transfo[14]==etat_transfo[15] and etat_transfo[18]==etat_transfo[19] and etat_transfo[20:24] == (5,5,5,5) and type(lastlayer_fop) != str):
-        mouv+= lastlayer_fop
-        return mouv
-    etat_intermed = etat_transfo
-    for n in ["F2","B2"]:
-        etat_intermed = appliquer2(etat_transfo,n)
-    if (etat_transfo[6]==etat_transfo[7] and etat_transfo[10]==etat_transfo[11] and etat_transfo[14]==etat_transfo[15] and etat_transfo[18]==etat_transfo[19] and etat_transfo[20:24] == (5,5,5,5) and type(lastlayer_fop) != str):
-        mouv+= lastlayer_fop
-        return mouv
+    rota = 0
+    rota_bas = 0
+    trouve = False
+    if barre[0]:
+        while not len(set(etat[4:6])) == 1:
+            etat = appliquer2(etat,"y")
+            rota += 1
+    if rota != 0: mouv += (raccourci("y",rota),)
+    if barre[1]:
+        while not len(set(etat[6:8])) == 1:
+            etat = appliquer2(etat,"D'")
+            rota_bas += 1
+    if rota_bas != 0: mouv += (raccourci("y",rota),)
+    for nom, (mouvements,poids,liste) in Algorithme2.items():
+        if not nom.startswith("ortega_"):
+            continue
+        if not barre in liste:
+            continue
+        for i in range(2):
+            repeter2(etat,"x2",i)
+            for n in mouvements:
+                etat = appliquer2(etat,n)
+            if est_resolu2(etat):
+                trouve = True
+                mouv += mouvements
+                break
+        if trouve:
+            break
+        else:
+            etat = appliquer2(etat,"x2")
+        
     return mouv
-"""
 
 
 def melanger_OLL2(n,seed):

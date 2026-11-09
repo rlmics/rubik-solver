@@ -40,6 +40,8 @@ def solver_bfs2(etat_actuelle):
     while etats:
         etat = etats.popleft()
         for nom, perm in MOUVEMENTS2.items():
+            if nom in ROTATIONS:
+                continue
             voisin = appliquer2(etat,nom)
             if voisin in vus:
                 continue
