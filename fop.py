@@ -7,27 +7,27 @@ from solver import reconstruire_fin
 #Dictionnaire algo
 Algorithme2 = {
     #Mouvement important
-    "SEXYMOVE":     [("R","U","R'","U'"),6],
-    "REVERSE-SEXYMOVE": [("U","R","U'","R'"),6],
+    "SEXYMOVE":     [("R","U","R'","U'"),6,[]],
+    "REVERSE-SEXYMOVE": [("U","R","U'","R'"),6,[]],
 
 
     #derniere face
-    "OLL_SUNE":         [("R","U","R'","U","R","U2","R'"),6],                                                   #1 sticker bien place   (droite)
-    "OLL_ANTI-SUNE":    [("R","U2","R'","U'","R","U'","R'"),6],                                                 #1 sticker bien place   (gauche)
-    "OLL_CORNER":       [("F","R","U'","R'","U'","R","U","R'","F'"),4],                                         #2 stickers bien places (corner)
-    "OLL_BARRE":        [("R","U","R'","U'","R'","F","R","F'"),3],                                              #2 stickers bien places (1 barre + 0 barre exterieure)
-    "OLL_HEADLIGHTS":   [("F","R","U","R'","U'","F'"),6],                                                       #2 stickers bien places (1 barre + 1 barre exterieure)
-    "OLL_T":            [("R","U2","R2","U'","R2","U'","R2","U2","R"),2],                                       #0 sticker bien place   (0 barre + 1 barre exterieure)
-    "OLL_DOUBLE-SUNE":  [("R","U2","R'","U'","R","U","R'","U'","R","U'","R'"),3],                               #0 sticker bien place   (0 barre + 2 barre exterieure)
+    "OLL_SUNE":         [("R","U","R'","U","R","U2","R'"),6,[]],                                                   #1 sticker bien place   (droite)
+    "OLL_ANTI-SUNE":    [("R","U2","R'","U'","R","U'","R'"),6,[]],                                                 #1 sticker bien place   (gauche)
+    "OLL_CORNER":       [("F","R","U'","R'","U'","R","U","R'","F'"),4,[]],                                         #2 stickers bien places (corner)
+    "OLL_BARRE":        [("R","U","R'","U'","R'","F","R","F'"),3,[]],                                              #2 stickers bien places (1 barre + 0 barre exterieure)
+    "OLL_HEADLIGHTS":   [("F","R","U","R'","U'","F'"),6,[]],                                                       #2 stickers bien places (1 barre + 1 barre exterieure)
+    "OLL_T":            [("R","U2","R2","U'","R2","U'","R2","U2","R"),2,[]],                                       #0 sticker bien place   (0 barre + 1 barre exterieure)
+    "OLL_DOUBLE-SUNE":  [("R","U2","R'","U'","R","U","R'","U'","R","U'","R'"),3,[]],                               #0 sticker bien place   (0 barre + 2 barre exterieure)
 
     #Derniere etape
-    "PLL_T-PERM":       [("R","U","R'","U'","R'","F","R2","U'","R'","U'","R","U","R'","F'"),2],                 #4 barres basses correctes & 1 barre haute correcte
-    "PLL_J-PERM":       [("F","R","U'","R'","U'","R","U","R'","F'","R","U","R'","U'","R'","F","R","F'"),2],     #4 barres basses correctes & 0 barre haute correcte
+    "PLL_T-PERM":       [("R","U","R'","U'","R'","F","R2","U'","R'","U'","R","U","R'","F'"),2,[]],                 #4 barres basses correctes & 1 barre haute correcte
+    "PLL_J-PERM":       [("F","R","U'","R'","U'","R","U","R'","F'","R","U","R'","U'","R'","F","R","F'"),2,[]],     #4 barres basses correctes & 0 barre haute correcte
     
     #ortega
-    "ortega_COUPLE":       [("R2","U'","B2","U2","R2","U'","R2"),2,[[1,1]]],                                            #1 barre basse correct     & 1 barre haute correcte
-    "ortega_LONELY":       [("R","U'","R","F2","R'","U","R'"),2,[[1,0],[0,1]]],                                               #0 barre basse correcte    & 1 barre haute correcte
-    "ortega_VOID":         [("R2","F2","R2"),2,[[0,0]]],                                                                #0 barre basse correcte    & 0 barre haute correcte
+    "ortega_COUPLE":       [("R2","U'","B2","U2","R2","U'","R2"),2,[[1,1]]],                                       #1 barre basse correct     & 1 barre haute correcte
+    "ortega_LONELY":       [("R","U'","R","F2","R'","U","R'"),2,[[1,0],[0,1]]],                                    #0 barre basse correcte    & 1 barre haute correcte
+    "ortega_VOID":         [("R2","F2","R2"),2,[[0,0]]],                                                           #0 barre basse correcte    & 0 barre haute correcte
 }
 
 def PLL2(etat_actuelle):
@@ -38,16 +38,20 @@ def PLL2(etat_actuelle):
     else:
         return "euhhhhh comment dire... t'as fais une erreur d'entrée"
     for k in range(4):
-        if repeter2(etat_initial, "U", k) == RESOLU2:
+        if est_resolu2(repeter2(etat_initial, "U", k)):
             return ("U",)*k
+    if len(set(etat_initial[4:6])) == 1 and len(set(etat_initial[8:10])) == 1:
+        etat_initial = appliquer2(etat_initial,"z2")
+        mouv = ("z2",)
+    else:
+        mouv = ()
     etat = etat_initial
     trouve = False
-    for nom, (mouvements, poids) in Algorithme2.items():
+    for nom, (mouvements, poids,liste) in Algorithme2.items():
         indice_start = 0
         indice_stop = 0
         if not nom.startswith("PLL_"):
             continue
-
         for i in range(4):
             indice_stop = 0
             etat = repeter2(etat,"U",i)
@@ -55,7 +59,7 @@ def PLL2(etat_actuelle):
                 etat = appliquer2(etat,n)
             etat_transfo = etat
             for j in range(4):
-                if repeter2(etat,"U",j) == RESOLU2:
+                if est_resolu2(repeter2(etat,"U",j)):
                     trouve = True
                     break
                 else:
@@ -69,7 +73,7 @@ def PLL2(etat_actuelle):
         if trouve:
             break
 
-    return auf(indice_start) + mouvements + auf(indice_stop) if trouve else "chef... t'as fais une erreur quelque part"
+    return mouv + auf(indice_start) + mouvements + auf(indice_stop) if trouve else "chef... t'as fais une erreur quelque part"
 
 def OLL2(etat_actuelle):
     if (len(etat_actuelle) == 12):
@@ -82,7 +86,7 @@ def OLL2(etat_actuelle):
         return ()
     etat = etat_initial
     trouve = False
-    for nom, (mouvements, poids) in Algorithme2.items():
+    for nom, (mouvements, poids,liste) in Algorithme2.items():
         indice_i = 0
         if not nom.startswith("OLL_"):
             continue
@@ -149,15 +153,26 @@ def ortega(etat_actuelle):
         etat_initial = RESOLU2[0:4] + etat_actuelle + RESOLU2[20:]
     elif (len(etat_actuelle) == 24):
         etat_initial = etat_actuelle
-    if (len(set(etat_initial[0:4])) != 1 
-        and len(set(etat_initial[20:24])) != 1
+    else:
+        return "i"
+    if ((len(set(etat_initial[4:6])) == 1
+        and len(set(etat_initial[8:10])) == 1
+        and len(set(etat_initial[12:14])) == 1
+        and len(set(etat_initial[16:18])) == 1)
+        or
+        (len(set(etat_initial[6:8])) == 1
+        and len(set(etat_initial[10:12])) == 1
+        and len(set(etat_initial[14:16])) == 1
+        and len(set(etat_initial[18:20])) == 1)):
+        return PLL2(etat_initial)
+    elif (len(set(etat_initial[0:4])) != 1 
+        or len(set(etat_initial[20:24])) != 1
         ):
-        return "c'est pas bon ça"
+        return "a"
     barre = [0,0]
     for i in range(2):
         for j in range(4):
-            for n in ["U","D'"]:
-                etat_initial = appliquer2(etat_initial, n)
+            etat_initial = appliquer2(etat_initial, "y")
             if len(set(etat_initial[4 + 2*i :6 + 2*i])) == 1:
                 barre[i] += 1
     etat = etat_initial
@@ -174,32 +189,38 @@ def ortega(etat_actuelle):
         while not len(set(etat[6:8])) == 1:
             etat = appliquer2(etat,"D'")
             rota_bas += 1
-    if rota_bas != 0: mouv += (raccourci("y",rota),)
+    if rota_bas != 0: mouv += (raccourci("D'",rota_bas),)
     for nom, (mouvements,poids,liste) in Algorithme2.items():
         if not nom.startswith("ortega_"):
             continue
         if not barre in liste:
             continue
+        etat_initial = etat
         for i in range(2):
-            repeter2(etat,"x2",i)
+            etat = etat_initial
+            etat = repeter2(etat,"z2",i)
             for n in mouvements:
                 etat = appliquer2(etat,n)
-            if est_resolu2(etat):
-                trouve = True
-                mouv += mouvements
+            for k in range(4):
+                if est_resolu2(etat):
+                    trouve = True
+                    if i > 0: mouv += ("z2",)
+                    mouv += mouvements
+                    if k > 0: mouv+= (raccourci("U",k),)
+                    break
+                etat = appliquer2(etat,"U")
+            if trouve:
                 break
         if trouve:
             break
-        else:
-            etat = appliquer2(etat,"x2")
         
-    return mouv
+    return mouv if trouve else "e"
 
 
 def melanger_OLL2(n,seed):
     etat = RESOLU2
     mouv_oll = []
-    for nom, (mouvements,poids) in Algorithme2.items():
+    for nom, (mouvements,poids,liste) in Algorithme2.items():
         if not nom.startswith("OLL_"):
             continue
         else:
@@ -219,7 +240,7 @@ def melanger_OLL2(n,seed):
 def melanger_PLL2(n,seed):
     etat = RESOLU2
     mouv_pll = []
-    for nom, (mouvements,poids) in Algorithme2.items():
+    for nom, (mouvements,poids,liste) in Algorithme2.items():
         if not nom.startswith("PLL_"):
             continue
         else:
@@ -236,3 +257,22 @@ def melanger_PLL2(n,seed):
     res = [etat,mouv]
     return res
 
+def melanger_ortega(n,seed):
+    etat = RESOLU2
+    mouv_pll = []
+    for nom, (mouvements,poids,liste) in Algorithme2.items():
+        if not nom.startswith("ortega_"):
+            continue
+        else:
+            mouv_pll.append(mouvements)
+    mouv=[]
+    rng = random.Random(seed)
+    for _ in range(n):
+        nom = rng.choice(list(mouv_pll))
+        auf = rng.randrange(4)
+        etat = repeter2(etat,rng.choice(["U","D"]),auf)
+        for m in nom:
+            etat = appliquer2(etat,m)
+        mouv.append(nom)
+    res = [etat,mouv]
+    return res

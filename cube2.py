@@ -52,8 +52,6 @@ MOUVEMENTS2 = {
     "z2": (22,23,20,21,6,7,4,5,18,19,16,17,14,15,12,13,10,11,8,9,2,3,0,1),
 }
 
-ROTATIONS2 = {"x","x'","x2","y","y'","y2","z","z'","z2"}
-
 def appliquer2(etat_actuelle, mouv):
     perm = MOUVEMENTS2[mouv]
     return (tuple(etat_actuelle[i] for i in perm))
