@@ -1,7 +1,7 @@
 import random
 from collections import deque
 from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, est_resolu3, cross, ROTATIONS
-from solver import inverse, reconstruire
+from solver import inverse, reconstruire_fin
 
 #Dictionnaire algo
 ALGORITHMES3 = {
@@ -153,9 +153,9 @@ def solver_cross(etat_actuelle):
         return "il y a une erreur dans ta liste"
     elif cross(etat_actuelle):
         return []
-    etats = deque([RESOLU3])
-    vus = {RESOLU3}
-    parent = {RESOLU3: None}
+    etats = deque([etat_actuelle])
+    vus = {etat_actuelle}
+    parent = {etat_actuelle: None}
     while etats:
         etat = etats.popleft()
         for nom, perm in MOUVEMENTS3.items():
@@ -166,9 +166,10 @@ def solver_cross(etat_actuelle):
                 continue
             vus.add(voisin)
             parent[voisin] = (etat,nom)
-            if voisin in cross(etat_actuelle):
-                return reconstruire(parent,voisin)
+            if cross(voisin):
+                return reconstruire_fin(parent,voisin)
             etats.append(voisin)
+    return "la croix est impossible"
 
 def F2L3(etat_actuelle):
     if len(etat_actuelle) != 54:

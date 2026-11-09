@@ -19,6 +19,13 @@ def reconstruire(dico,etat):
         etat = precedent
     return chemin
 
+def reconstruire_fin(dico,etat):
+    chemin = []
+    while dico[etat] != None:
+        precedent, mouv = dico[etat]
+        chemin.append(mouv)
+        etat = precedent
+    return chemin
 
 
 def solver_bfs2(etat_actuelle):
