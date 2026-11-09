@@ -1,6 +1,6 @@
 import random
 from collections import deque
-from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, est_resolu3, cross
+from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, est_resolu3, cross, ROTATIONS
 from solver import inverse, reconstruire
 
 #Dictionnaire algo
@@ -159,6 +159,8 @@ def solver_cross(etat_actuelle):
     while etats:
         etat = etats.popleft()
         for nom, perm in MOUVEMENTS3.items():
+            if nom in ROTATIONS:
+                continue
             voisin = appliquer3(etat,nom)
             if voisin in vus:
                 continue
@@ -167,6 +169,66 @@ def solver_cross(etat_actuelle):
             if voisin in cross(etat_actuelle):
                 return reconstruire(parent,voisin)
             etats.append(voisin)
+
+def F2L3(etat_actuelle):
+    if len(etat_actuelle) != 54:
+        return "euhhhhh comment dire... t'as fais une erreur d'entrée"
+    if all(len(set(etat_actuelle[i+3:i+9])) == 1 for i in range(9, 45, 9)):
+        return ()
+    etat = etat_actuelle
+    mouv = ()
+    trouve = []
+    slot=[0,0,0,0]
+    dernier = 0
+    for i in range(4):
+        if (len(set(etat[13:15]+etat[16:18])) == 1 
+            and len(set(etat[21:23]+etat[24:26])) == 1
+            and len(set(etat[50:51]+etat[46:48])) == 1):
+            trouve.append(i)
+        for n in ["U","E'","D'"]:
+            etat = appliquer3(etat,n)
+    for i in trouve:
+        slot[i] = 1
+    rotation = 0
+    while not all(slot):
+        if dernier >= 4:
+            return "euhhhhh comment dire... t'as fais une erreur d'entrée"
+        etat_transfo = etat
+        if slot[rotation % 4]:
+            for n in ["U","E'","D'"]:
+                etat = appliquer3(etat,n)
+            rotation += 1
+            mouv += ("y",)
+            dernier += 1
+            continue   
+        for nom, (mouvements, poids) in ALGORITHMES3.items():
+            indice_start = 0
+            if not nom.startswith("F2L_"):
+                continue
+            for j in range(4):
+                etat = repeter3(etat,"U",j)
+                for n in mouvements:
+                    etat = appliquer3(etat,n)
+                if (len(set(etat[13:15]+etat[16:18])) == 1 
+                    and len(set(etat[21:23]+etat[24:26])) == 1
+                    and len(set(etat[50:51]+etat[46:48])) == 1):
+                    slot[rotation % 4] = 1
+                    mouv += auf(j) + mouvements
+                    dernier = 0
+                    break
+                else:
+                    etat = etat_transfo
+            if slot[rotation % 4]:
+                break
+        if all(slot):
+            break
+        for n in ["U","E'","D'"]:
+            etat = appliquer3(etat,n)
+        rotation += 1
+        mouv += ("y",)
+        dernier += 1
+    return mouv
+
 
 def PLL3(etat_actuelle):
     if (len(etat_actuelle) == 12):
@@ -295,3 +357,20 @@ def melanger_PLL3(n,seed):
         mouv.append(nom)
     res = [etat,mouv]
     return res
+
+
+def solver_cfop(etat):
+    print(solver_cross(etat))
+    etat_actuelle = etat
+    for n in solver_cross(etat):
+        etat_actuelle = appliquer3(etat_actuelle,n)
+    etat = etat_actuelle
+    print(" ")
+    print(F2L3(etat))
+    for n in F2L3(etat):
+        etat_actuelle = appliquer3(etat_actuelle,n)
+    etat = etat_actuelle
+    print(" ")
+    print(lastlayer_cfop(etat))
+    for n in lastlayer_cfop(etat):
+        etat_actuelle = appliquer3(etat_actuelle)

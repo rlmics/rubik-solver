@@ -1,7 +1,7 @@
 import random
 from collections import deque
 from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2, melanger2,afficher2
-from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, melanger3, afficher3
+from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, melanger3, afficher3, ROTATIONS
 
 def inverse(mouv):
     if len(mouv) == 1:
@@ -52,6 +52,8 @@ def solver_bfs3(etat_actuelle):
     while etats:
         etat = etats.popleft()
         for nom, perm in MOUVEMENTS3.items():
+            if nom in ROTATIONS:
+                continue
             voisin = appliquer3(etat,nom)
             if voisin in vus:
                 continue
