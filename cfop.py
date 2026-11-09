@@ -360,17 +360,19 @@ def melanger_PLL3(n,seed):
 
 
 def solver_cfop(etat):
-    print(solver_cross(etat))
     etat_actuelle = etat
-    for n in solver_cross(etat):
-        etat_actuelle = appliquer3(etat_actuelle,n)
-    etat = etat_actuelle
-    print(" ")
-    print(F2L3(etat))
-    for n in F2L3(etat):
-        etat_actuelle = appliquer3(etat_actuelle,n)
-    etat = etat_actuelle
-    print(" ")
-    print(lastlayer_cfop(etat))
-    for n in lastlayer_cfop(etat):
-        etat_actuelle = appliquer3(etat_actuelle)
+    solution = []
+
+    for nom_etape, fonction in (("cross", solver_cross),
+                                ("F2L", F2L3),
+                                ("derniere couche", lastlayer_cfop)):
+        mouv = fonction(etat_actuelle)          # un seul appel par étape
+        if not isinstance(mouv, (list, tuple)):  # chaîne d'erreur ou None
+            return f"échec à l'étape {nom_etape} : {mouv}"
+        print(nom_etape, ":", mouv)
+        print(" ")
+        for n in mouv:
+            etat_actuelle = appliquer3(etat_actuelle, n)
+        solution += mouv
+
+    return solution
