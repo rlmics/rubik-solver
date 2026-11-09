@@ -1,7 +1,7 @@
 from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2
-from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3
+from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, melanger3, est_resolu3
 from fop import Algorithme2
-from cfop import ALGORITHMES3
+from cfop import ALGORITHMES3, solver_cfop, F2L3, cross
 
 # TEST ALGORITHME
 def test3():

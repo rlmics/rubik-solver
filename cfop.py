@@ -302,23 +302,6 @@ def OLL3(etat_actuelle):
 
     return auf(indice_i) + mouvements if trouve else "chef... C'est juste impossible"
 
-def lastlayer_cfop(etat_actuelle):
-    if len(etat_actuelle) != 54:
-        return "il me faut l'état complet"
-    etat = etat_actuelle
-    etat_initial= etat
-    mouv = ()
-    if type(OLL3(etat_actuelle)) is str:
-        return "mhhh tu t'es trompe"
-    for n in OLL3(etat_actuelle):
-        etat = appliquer3(etat,n)
-    mouv += OLL3(etat_initial)
-    etat_transfo = etat
-    if type(PLL3(etat_transfo)) is str:
-        return "mhhh tu t'es trompe"
-    mouv += PLL3(etat_transfo)
-    return mouv
-
 def melanger_OLL3(n,seed):
     etat = RESOLU3
     mouv_oll = []
@@ -366,9 +349,10 @@ def solver_cfop(etat):
 
     for nom_etape, fonction in (("cross", solver_cross),
                                 ("F2L", F2L3),
-                                ("derniere couche", lastlayer_cfop)):
-        mouv = fonction(etat_actuelle)          # un seul appel par étape
-        if not isinstance(mouv, (list, tuple)):  # chaîne d'erreur ou None
+                                ("OLL", OLL3),
+                                ("PLL", PLL3)):
+        mouv = fonction(etat_actuelle)
+        if not isinstance(mouv, (list, tuple)):
             return f"échec à l'étape {nom_etape} : {mouv}"
         print(nom_etape, ":", mouv)
         print(" ")

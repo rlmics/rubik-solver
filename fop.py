@@ -1,6 +1,8 @@
 import random
 from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2
 from cfop import auf
+from collections import deque
+from solver import reconstruire_fin
 
 #Dictionnaire algo
 Algorithme2 = {
@@ -116,6 +118,32 @@ def lastlayer_fop(etat_actuelle):
     mouv += PLL2(etat_transfo)
     return mouv
 
+def firstlayer_fop(etat_actuelle):
+    if ((len(etat_actuelle) != 24) 
+        or (etat_actuelle.count(0) != 4) 
+        or (etat_actuelle.count(1) != 4) 
+        or (etat_actuelle.count(2) != 4) 
+        or (etat_actuelle.count(3) != 4) 
+        or (etat_actuelle.count(4) != 4) 
+        or (etat_actuelle.count(5) != 4)):
+        return "il y a une erreur dans ta liste"
+    elif etat_actuelle == RESOLU2:
+        return []
+    etats = deque([etat_actuelle])
+    vus = {etat_actuelle}
+    parent = {etat_actuelle: None}
+    while etats:
+        etat = etats.popleft()
+        for nom, perm in MOUVEMENTS2.items():
+            voisin = appliquer2(etat,nom)
+            if voisin in vus:
+                continue
+            vus.add(voisin)
+            parent[voisin] = (etat,nom)
+            if len(set(voisin[20:24])) == 1:
+                return reconstruire_fin(parent,voisin)
+            etats.append(voisin)
+
 """
 def ortega(etat_actuelle):
     if (len(etat_actuelle) == 16):
@@ -185,3 +213,4 @@ def melanger_PLL2(n,seed):
         mouv.append(nom)
     res = [etat,mouv]
     return res
+

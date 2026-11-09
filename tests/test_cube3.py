@@ -1,6 +1,6 @@
 import random
-from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3
-from cfop import OLL3, PLL3, lastlayer_cfop, melanger_OLL3, melanger_PLL3, auf
+from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, melanger3, est_resolu3
+from cfop import OLL3, PLL3, melanger_OLL3, melanger_PLL3, auf, solver_cfop
 
 def test_quatre_fois_identite():
     for m in ["U", "R", "F","D","L","B","M", "E", "S", "u", "d", "r", "l", "f", "b"]:
@@ -61,9 +61,9 @@ def test_PLL3():
             etat = appliquer3(etat,m)
         assert etat == RESOLU3
 
-def test_lastlayer_cfop():
-    for i in range(1000):
-        etat = melanger_OLL3(random.randrange(100),random.randrange(1000))[0]
-        for m in lastlayer_cfop(etat):
-            etat = appliquer3(etat, m)
-        assert etat == RESOLU3
+
+def test_cfop():
+    etat = melanger3(10,90)[0]
+    for m in solver_cfop(melanger3(10,90)[0]):
+        etat = appliquer3(etat, m)
+    assert est_resolu3(etat)

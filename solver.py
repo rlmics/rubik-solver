@@ -25,6 +25,7 @@ def reconstruire_fin(dico,etat):
         precedent, mouv = dico[etat]
         chemin.append(mouv)
         etat = precedent
+    chemin.reverse()
     return chemin
 
 
@@ -80,10 +81,17 @@ print(" ")
 print("Solution:")
 print(solver_bfs2(melanger2(6,90)[0]))
 """
-print("C'est un mélange à 6 mouvements sur un 3x3")
-afficher3(melanger3(6,90)[0])
-print(" ")
-print(melanger3(6,90)[1])
-print(" ")
-print("Solution:")
-print(solver_bfs3(melanger3(6,90)[0]))
+
+if __name__ == "__main__":
+    from cfop import solver_cfop
+    for i in range(6):
+        print("C'est un mélange à 6 mouvements sur un 3x3")
+        afficher3(melanger3(5,30*i)[0])
+        print(" ")
+        print(melanger3(5,30*i)[1])
+        print(" ")
+        print("Solution cfop:")
+        print(solver_cfop(melanger3(5,30*i)[0]))
+        print(" ")
+        print("Solution optimale:")
+        print(solver_bfs3(melanger3(5,30*i)[0]))
