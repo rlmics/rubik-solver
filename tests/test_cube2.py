@@ -68,4 +68,4 @@ def test_ortega():
             etat = melanger_ortega(random.randrange(100),random.randrange(1000))[0]
             for m in ortega(etat):
                 etat = appliquer2(etat,m)
-            assert est_resolu2(etat), f"échec au mélange numéro {i}: {melanger_ortega(n,seed)[1]}. Ortega pas correct"
+            assert est_resolu2(etat)
