@@ -1,5 +1,5 @@
 import random
-from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2, raccourci, est_resolu2, oppose
+from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2, raccourci, est_resolu2, oppose, goodlayer, barre, goodface, faire
 from collections import deque
 from solver import reconstruire_fin
 
@@ -35,11 +35,11 @@ def PLL2(etat_actuelle):
     elif (len(etat_actuelle) == 24):
         etat_initial = etat_actuelle
     else:
-        return "euhhhhh comment dire... t'as fais une erreur d'entrée"
+        raise ValueError("PLL: Taille non conforme")
     for k in range(4):
         if est_resolu2(repeter2(etat_initial, "U", k)):
             return raccourci("U",k)
-    if len(set(etat_initial[4:6])) == 1 and len(set(etat_initial[8:10])) == 1:
+    if goodlayer(etat_initial,0):
         etat_initial = appliquer2(etat_initial,"z2")
         mouv = ("z2",)
     else:
@@ -47,23 +47,21 @@ def PLL2(etat_actuelle):
     barres = 0
     for j in range(4):
         etat_initial = appliquer2(etat_initial, "y")
-        if len(set(etat_initial[4:6])) == 1:
+        if barre(etat_initial,0):
             barres += 1
     etat = etat_initial
     trouve = False
     
-    for nom, (mouvements, poids,barre) in Algorithme2.items():
+    for nom, (mouvements, poids,trait) in Algorithme2.items():
         indice_start = 0
         indice_stop = 0
         if not nom.startswith("PLL_"):
             continue
-        if barres != barre:
+        if barres != trait:
             continue
         for i in range(4):
             indice_stop = 0
-            etat = repeter2(etat,"U",i)
-            for n in mouvements:
-                etat = appliquer2(etat,n)
+            etat = faire(etat,("U",)*i + mouvements)
             etat_transfo = etat
             for j in range(4):
                 if est_resolu2(repeter2(etat,"U",j)):
@@ -79,8 +77,10 @@ def PLL2(etat_actuelle):
                 etat = etat_initial
         if trouve:
             break
-
-    return mouv + raccourci("U",indice_start) + mouvements + raccourci("U",indice_stop) if trouve else "chef... t'as fais une erreur quelque part"
+    if trouve:
+        return mouv + raccourci("U",indice_start) + mouvements + raccourci("U",indice_stop) 
+    else:
+        raise ValueError("PLL: J'ai pas trouvé")
 
 def OLL2(etat_actuelle):
     if (len(etat_actuelle) == 12):
@@ -88,8 +88,8 @@ def OLL2(etat_actuelle):
     elif (len(etat_actuelle) == 24):
         etat_initial = etat_actuelle
     else:
-        return "euhhhhh comment dire... t'as fais une erreur d'entree"
-    if len(set(etat_initial[0:4])) == 1:
+        raise ValueError("OLL: Taille non conforme")
+    if goodface(etat_initial,0):
         return ()
     etat = etat_initial
     trouve = False
@@ -100,10 +100,8 @@ def OLL2(etat_actuelle):
         if not etat[0:4].count(oppose(etat[-1])) == compte:
             continue
         for i in range (4):
-            etat = repeter2(etat,"U",i)   
-            for n in mouvements:
-                etat = appliquer2(etat,n)
-            if len(set(etat[0:4])) == 1:
+            etat = faire(etat,("U",)*i + mouvements)
+            if goodface(etat,0):
                 trouve = True
                 break
             else:
@@ -111,7 +109,10 @@ def OLL2(etat_actuelle):
                 indice_i += 1
         if trouve:
             break
-    return raccourci("U",indice_i) + mouvements if trouve else "chef... C'est juste impossible"
+    if trouve:
+        return raccourci("U",indice_i) + mouvements
+    else:
+        raise ValueError("OLL: J'ai pas trouvé")
 
 def firstlayer_fop(etat_actuelle):
     if ((len(etat_actuelle) != 24) 
@@ -121,7 +122,7 @@ def firstlayer_fop(etat_actuelle):
         or (etat_actuelle.count(3) != 4) 
         or (etat_actuelle.count(4) != 4) 
         or (etat_actuelle.count(5) != 4)):
-        return "il y a une erreur dans ta liste"
+        raise ValueError("Liste non conforme")
     elif etat_actuelle == RESOLU2:
         return []
     etats = deque([etat_actuelle])
@@ -135,7 +136,7 @@ def firstlayer_fop(etat_actuelle):
                 continue
             vus.add(voisin)
             parent[voisin] = (etat,nom)
-            if len(set(voisin[20:24])) == 1:
+            if goodface(voisin, 5):
                 return reconstruire_fin(parent,voisin)
             etats.append(voisin)
 
@@ -145,45 +146,43 @@ def ortega(etat_actuelle):
     elif (len(etat_actuelle) == 24):
         etat_initial = etat_actuelle
     else:
-        return "c'est pas possible"
-    if (len(set(etat_initial[0:4])) != 1 
-        or len(set(etat_initial[20:24])) != 1
-        ):
+        raise ValueError("ortega: Taille non conforme")
+    if (not(goodface(etat_initial,0) 
+        and goodface(etat_initial,5)
+        )):
         return "a"
-    barre = [0,0]
+    trait = [0,0]
     for i in range(2):
-        for j in range(4):
+        for _ in range(4):
             etat_initial = appliquer2(etat_initial, "y")
-            if len(set(etat_initial[4 + 2*i :6 + 2*i])) == 1:
-                barre[i] += 1
-    if 4 in barre:
+            if barre(etat_initial,i):
+                trait[i] += 1
+    if 4 in trait:
         return PLL2(etat_initial)
     etat = etat_initial
     mouv = ()
     rota = 0
     rota_bas = 0
     trouve = False
-    if barre[0]:
-        while not len(set(etat[4:6])) == 1:
+    if trait[0]:
+        while not barre(etat,0):
             etat = appliquer2(etat,"y")
             rota += 1
     if rota != 0: mouv += raccourci("y",rota)
-    if barre[1]:
-        while not len(set(etat[6:8])) == 1:
+    if trait[1]:
+        while not barre(etat,1):
             etat = appliquer2(etat,"D'")
             rota_bas += 1
     if rota_bas != 0: mouv += raccourci("D'",rota_bas)
     for nom, (mouvements,poids,liste) in Algorithme2.items():
         if not nom.startswith("ortega_"):
             continue
-        if not barre in liste:
+        if not trait in liste:
             continue
         etat_initial = etat
         for i in range(2):
             etat = etat_initial
-            etat = repeter2(etat,"z2",i)
-            for n in mouvements:
-                etat = appliquer2(etat,n)
+            etat = faire(etat,("z2",)*i + mouvements)
             for k in range(4):
                 if est_resolu2(etat):
                     trouve = True
@@ -196,8 +195,10 @@ def ortega(etat_actuelle):
                 break
         if trouve:
             break
-        
-    return mouv if trouve else "e"
+    if trouve:    
+        return mouv
+    else:
+        raise ValueError("ortega: J'ai pas trouvé")
 
 
 def melanger_OLL2(n,seed):
@@ -213,9 +214,7 @@ def melanger_OLL2(n,seed):
     for _ in range(n):
         nom = rng.choice(list(mouv_oll))
         auf = rng.randrange(4)
-        etat = repeter2(etat, "U",auf)
-        for m in nom:
-            etat = appliquer2(etat,m)
+        etat = faire(etat,("U",)*auf + nom)
         mouv.append(nom)
     res = [etat,mouv]
     return res
@@ -233,9 +232,7 @@ def melanger_PLL2(n,seed):
     for _ in range(n):
         nom = rng.choice(list(mouv_pll))
         auf = rng.randrange(4)
-        etat = repeter2(etat,"U",auf)
-        for m in nom:
-            etat = appliquer2(etat,m)
+        etat = faire(etat,("U",)*auf + nom)
         mouv.append(nom)
     res = [etat,mouv]
     return res
@@ -253,9 +250,7 @@ def melanger_ortega(n,seed):
     for _ in range(n):
         nom = rng.choice(list(mouv_pll))
         auf = rng.randrange(4)
-        etat = repeter2(etat,rng.choice(["U","D"]),auf)
-        for m in nom:
-            etat = appliquer2(etat,m)
+        etat = faire(etat,(rng.choice(["U","D"]),)*auf + nom)
         mouv.append(nom)
     res = [etat,mouv]
     return res

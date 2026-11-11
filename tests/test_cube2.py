@@ -1,5 +1,5 @@
 import random
-from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2, melanger2, est_resolu2
+from cube2 import MOUVEMENTS2, RESOLU2, appliquer2, repeter2, melanger2, est_resolu2, faire, goodface
 from fop import PLL2, OLL2, melanger_OLL2, melanger_PLL2, firstlayer_fop, melanger_ortega, ortega
 
 # TEST MOUVEMENT
@@ -32,33 +32,26 @@ def test_tables_sont_des_permutations():
 def test_OLL2():
     for i in range(1000):
         etat = melanger_OLL2(random.randrange(100),random.randrange(1000))[0]
-        for m in OLL2(etat):
-            etat = appliquer2(etat,m)
-        assert len(set(etat[0:4])) == 1
+        etat = faire(etat,OLL2(etat))
+        assert goodface(etat,0)
 
 def test_PLL2():
     for i in range(1000):
         n = random.randrange(100)
         seed = random.randrange(1000)
         etat = melanger_PLL2(n,seed)[0]
-        for m in PLL2(etat):
-            etat = appliquer2(etat,m)
-        print(firstlayer_fop(melanger_ortega(n,seed)[0]))
-        print(etat)
-        print(melanger_ortega(n,seed)[1])
+        etat = faire(etat,PLL2(etat))
         assert est_resolu2(etat)
 
 def test_firstlayer_fop():
     for i in range(1000):
         etat = melanger2(random.randrange(100),random.randrange(1000))[0]
-        for m in firstlayer_fop(etat):
-            etat = appliquer2(etat,m)
-        assert len(set(etat[20:24])) == 1
+        etat = faire(etat,firstlayer_fop(etat))
+        assert goodface(etat,5)
 
 
 def test_ortega():
     for i in range(1000):
             etat = melanger_ortega(random.randrange(100),random.randrange(1000))[0]
-            for m in ortega(etat):
-                etat = appliquer2(etat,m)
+            etat = faire(etat,ortega(etat))
             assert est_resolu2(etat)

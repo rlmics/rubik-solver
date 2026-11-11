@@ -105,4 +105,19 @@ def raccourci(mouv,n):
 
 def est_resolu2(etat_actuelle):
     return all(len(set(etat_actuelle[i:i+4])) == 1 for i in range(0, 24, 4))
+
+
+def barre(etat_actuelle,n):
+    return len(set(etat_actuelle[4 + n*2:6 + n*2])) == 1
+
+def goodlayer(etat_actuelle,n):
+    return (barre(etat_actuelle,n) and barre(appliquer2(etat_actuelle,"y"),n))
+
+def goodface(etat_actuelle,n):
+    return len(set(etat_actuelle[n*4:n*4 + 4])) == 1
+
+def faire(etat_actuelle,algo):
+    for n in algo:
+        etat_actuelle = appliquer2(etat_actuelle,n)
+    return etat_actuelle
     
