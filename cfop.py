@@ -1,6 +1,6 @@
 import random
 from collections import deque
-from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, est_resolu3, cross, ROTATIONS
+from cube3 import MOUVEMENTS3, RESOLU3, appliquer3, repeter3, est_resolu3, cross, ROTATIONS, melanger3
 from solver import inverse, reconstruire_fin
 
 #Dictionnaire algo
@@ -173,7 +173,7 @@ def solver_cross(etat_actuelle):
 
 def F2L3(etat_actuelle):
     if len(etat_actuelle) != 54:
-        return "euhhhhh comment dire... t'as fais une erreur d'entrée"
+        raise ValueError("Tableau non conforme")
     if all(len(set(etat_actuelle[i+3:i+9])) == 1 for i in range(9, 45, 9)):
         return ()
     etat = etat_actuelle
@@ -186,24 +186,21 @@ def F2L3(etat_actuelle):
             and len(set(etat[21:23]+etat[24:26])) == 1
             and len(set(etat[50:51]+etat[46:48])) == 1):
             trouve.append(i)
-        for n in ["U","E'","D'"]:
-            etat = appliquer3(etat,n)
+        etat = appliquer3(etat,"y")
     for i in trouve:
         slot[i] = 1
     rotation = 0
     while not all(slot):
         if dernier >= 4:
-            return "euhhhhh comment dire... t'as fais une erreur d'entrée"
+            raise ValueError("bizarre")
         etat_transfo = etat
         if slot[rotation % 4]:
-            for n in ["U","E'","D'"]:
-                etat = appliquer3(etat,n)
+            etat = appliquer3(etat,"y")
             rotation += 1
             mouv += ("y",)
             dernier += 1
             continue   
         for nom, (mouvements, poids) in ALGORITHMES3.items():
-            indice_start = 0
             if not nom.startswith("F2L_"):
                 continue
             for j in range(4):
@@ -361,3 +358,6 @@ def solver_cfop(etat):
         solution += mouv
 
     return solution
+
+print(melanger3(20,90)[1])
+print(solver_cfop(melanger3(20,90)[0]))
